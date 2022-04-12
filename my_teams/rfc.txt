@@ -1,0 +1,101 @@
+/login
+-> 12 => client_event_logged_in(uuid, username)
+
+/logout
+-> 15 => client_event_logged_out(uuid, username)
+-> 31 => client_error_unauthorized()
+
+/send "user_uuid" "message_body"
+-> 16 => client_event_private_message_received(user_uuid, message_body)
+-> 30 => client_error_unknown_user(user_uuid)
+-> 31 => client_error_unauthorized()
+
+/create "reply_body"
+-> 17 => client_event_thread_reply_received(team_uuid, thread_uuid, user_uuid, reply_body)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 29 => client_error_unknown_thread(thread_uuid)
+-> 31 => client_error_unauthorized()
+-> 40 => client_print_reply_created(thread_uuid, user_uuid, reply_timestamp, reply_body)
+
+/create "team_name" "team_description"
+-> 18 => client_event_team_created(team_uuid, team_name, team_description)
+-> 31 => client_error_unauthorized()
+-> 32 => client_error_already_exist()
+-> 37 => client_print_team_created(team_uuid, team_name, team_description)
+
+/create "channel_name" "channel_description"
+-> 19 => client_event_channel_created(channel_uuid, channel_name, channel_description)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 31 => client_error_unauthorized()
+-> 32 => client_error_already_exist()
+-> 38 => client_print_channel_created(channel_uuid, channel_name, channel_description)
+
+/create "thread_title" "thread_body"
+-> 20 => client_event_thread_created(thread_uuid, user_uuid, thread_timestamp, thread_title, thread_body)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 31 => client_error_unauthorized()
+-> 32 => client_error_already_exist()
+-> 39 => client_print_thread_created(thread_uuid, user_uuid, thread_timestamp, thread_title, thread_body)
+
+/subscribed "team_uuid"
+-> 21 => client_print_users(user_uuid, user_name, user_status)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 31 => client_error_unauthorized()
+
+/subscribed
+-> 22 => client_print_teams(team_uuid, team_name, team_description)
+-> 31 => client_error_unauthorized()
+-> 27 => client_error_unknown_team(team_uuid)
+
+/subscribe "team_uuid"
+-> 41 => client_print_subscribed(user_uuid, team_uuid)
+-> 31 => client_error_unauthorized()
+-> 27 => client_error_unknown_team(team_uuid)
+
+/unsubscribe "team_uuid"
+-> 42 => client_print_unsubscribed(user_uuid, team_uuid)
+-> 31 => client_error_unauthorized()
+-> 27 => client_error_unknown_team(team_uuid)
+
+/list
+-> 23 => client_team_print_channels(channel_uuid, channel_name, channel_description)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 29 => client_error_unknown_thread(thread_uuid)
+-> 31 => client_error_unauthorized()
+
+/list
+-> 24 => client_channel_print_threads(thread_uuid, user_uuid, thread_timestamp, thread_title, thread_body)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 29 => client_error_unknown_thread(thread_uuid)
+-> 31 => client_error_unauthorized()
+
+/list
+-> 25 => client_thread_print_replies(thread_uuid, user_uuid, reply_timestamp, reply_body)
+-> 27 => client_error_unknown_team(team_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 29 => client_error_unknown_thread(thread_uuid)
+-> 31 => client_error_unauthorized()
+
+/messages "user_uuid"
+-> 26 => client_private_message_print_messages(sender_uuid, message_timestamp, message_body)
+-> 30 => client_error_unknown_user(user_uuid)
+-> 31 => client_error_unauthorized()
+
+/user "user_uuid"
+-> 33 => client_print_user(user_uuid, user_name, user_status)
+-> 30 => client_error_unknown_user(user_uuid)
+-> 31 => client_error_unauthorized()
+
+/info
+-> 33 => client_print_user(user_uuid, user_name, user_status)
+-> 34 => client_print_team(team_uuid, team_name, team_description)
+-> 35 => client_print_channel(channel_uuid, channel_name, channel_description)
+-> 36 => client_print_thread(thread_uuid, user_uuid, thread_timestamp, thread_title, thread_body)
+-> 31 => client_error_unauthorized()
+-> 29 => client_error_unknown_thread(thread_uuid)
+-> 28 => client_error_unknown_channel(channel_uuid)
+-> 27 => client_error_unknown_team(team_uuid)

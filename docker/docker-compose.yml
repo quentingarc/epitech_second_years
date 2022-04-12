@@ -1,0 +1,67 @@
+version: "3"
+services:
+
+  poll:
+    build: ./poll
+    ports:
+      - "5000:80"
+    depends_on:
+      - redis
+    networks:
+      - poll-tier
+    restart: on-failure
+    environment:
+      TA: "moulie"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379"
+    networks:
+      - poll-tier
+      - back-tier
+    restart: on-failure
+
+  worker:
+    build: ./worker
+    networks:
+      - back-tier
+    restart: on-failure
+    depends_on:
+      - db
+      - redis
+    environment:
+      TA2: "moulie"
+
+  db:
+    image: postgres:13.0
+    networks:
+      - result-tier
+      - back-tier
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "postgres"
+    restart: on-failure
+
+  result:
+    build: ./result
+    ports:
+      - "5001:80"
+    networks: 
+      - result-tier
+    restart: on-failure
+    depends_on:
+      - db
+    environment:
+      PORT: 80
+
+networks:
+  poll-tier:
+  result-tier:
+  back-tier:
+
+volumes:
+  db-data:
